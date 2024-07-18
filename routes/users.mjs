@@ -1,10 +1,20 @@
 import express from "express";
-import { createUser, updateUser } from "../controllers/userController.mjs";
+import {
+  createUser,
+  disableUser,
+  getUsers,
+  updateUser,
+} from "../controllers/userController.mjs";
 
 const userRoute = express.Router();
 
-userRoute.get("/", (req, res) => {
-  res.json("Get users ready");
+userRoute.get("/", async (req, res) => {
+  try {
+    const result = await getUsers();
+    res.json(result);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
 });
 
 userRoute.post("/", async (req, res) => {
@@ -18,7 +28,7 @@ userRoute.post("/", async (req, res) => {
     const result = await createUser(req.body);
     res.json(result);
   } catch (error) {
-    res.status(400).json({ error });
+    res.status(400).json(error);
   }
 });
 
@@ -33,7 +43,21 @@ userRoute.put("/:email", async (req, res) => {
     const result = await updateUser(email, req.body);
     res.json(result);
   } catch (error) {
-    res.status(400).json({ error });
+    res.status(400).json(error);
+  }
+});
+
+userRoute.delete("/:email", async (req, res) => {
+  try {
+    const email = req.params.email;
+    if (!email) {
+      return res.status(400).json({ error: "Parameter email is missing" });
+    }
+
+    const result = await disableUser(email);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json(error);
   }
 });
 

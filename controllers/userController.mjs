@@ -1,6 +1,11 @@
 // controllers/userController.mjs
 import User from "../models/userModel.mjs";
 
+export const getUsers = async () => {
+  const users = await User.find({ state: true });
+  return users;
+};
+
 // Función para crear un usuario en la base de datos
 export const createUser = async (body) => {
   const user = new User({
@@ -24,6 +29,18 @@ export const updateUser = async (email, body) => {
     },
     { new: true }
   );
-  console.log({ user });
+  return user;
+};
+
+export const disableUser = async (email) => {
+  const user = await User.findOneAndUpdate(
+    { email },
+    {
+      $set: {
+        state: false,
+      },
+    },
+    { new: true }
+  );
   return user;
 };
