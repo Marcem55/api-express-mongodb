@@ -1,8 +1,11 @@
-// controllers/userController.mjs
 import User from "../models/userModel.mjs";
+import bcrypt from "bcrypt";
 
 export const getUsers = async () => {
-  const users = await User.find({ state: true });
+  const users = await User.find({ state: true }).select({
+    name: 1,
+    email: 1,
+  });
   return users;
 };
 
@@ -11,7 +14,7 @@ export const createUser = async (body) => {
   const user = new User({
     email: body.email,
     name: body.name,
-    password: body.password,
+    password: bcrypt.hashSync(body.password, 10),
   });
 
   // Guardar el usuario en la base de datos

@@ -6,6 +6,7 @@ import {
   getCourses,
   updateCourse,
 } from "../controllers/courseController.mjs";
+import { verifyToken } from "../middlewares/auth.mjs";
 
 const courseRoute = express.Router();
 
@@ -14,7 +15,7 @@ const schema = Joi.object({
   description: Joi.string().min(10).max(100),
 });
 
-courseRoute.get("/", async (req, res) => {
+courseRoute.get("/", verifyToken, async (req, res) => {
   try {
     const result = await getCourses();
     res.json(result);
@@ -23,7 +24,7 @@ courseRoute.get("/", async (req, res) => {
   }
 });
 
-courseRoute.post("/", async (req, res) => {
+courseRoute.post("/", verifyToken, async (req, res) => {
   try {
     // Validar los datos de entrada
     const { title, description } = req.body;
@@ -43,7 +44,7 @@ courseRoute.post("/", async (req, res) => {
   }
 });
 
-courseRoute.put("/:id", async (req, res) => {
+courseRoute.put("/:id", verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
     const { title, description } = req.body;
@@ -63,7 +64,7 @@ courseRoute.put("/:id", async (req, res) => {
   }
 });
 
-courseRoute.delete("/:id", async (req, res) => {
+courseRoute.delete("/:id", verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
     if (!id) {

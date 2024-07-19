@@ -1,11 +1,14 @@
 import express from "express";
+import jwt, { decode } from "jsonwebtoken";
 import Joi from "joi";
+import "dotenv/config";
 import {
   createUser,
   disableUser,
   getUsers,
   updateUser,
 } from "../controllers/userController.mjs";
+import { verifyToken } from "../middlewares/auth.mjs";
 
 const userRoute = express.Router();
 
@@ -18,7 +21,7 @@ const schema = Joi.object({
   }),
 });
 
-userRoute.get("/", async (req, res) => {
+userRoute.get("/", verifyToken, async (req, res) => {
   try {
     const result = await getUsers();
     res.json(result);
@@ -38,7 +41,10 @@ userRoute.post("/", async (req, res) => {
     const { error, value } = schema.validate({ name, email, password });
     if (!error) {
       const result = await createUser(req.body);
-      res.json(result);
+      res.json({
+        name: result.name,
+        email: result.email,
+      });
     } else {
       res.status(400).json(error);
     }
@@ -47,7 +53,7 @@ userRoute.post("/", async (req, res) => {
   }
 });
 
-userRoute.put("/:email", async (req, res) => {
+userRoute.put("/:email", verifyToken, async (req, res) => {
   try {
     const email = req.params.email;
     const { name, password } = req.body;
@@ -58,7 +64,10 @@ userRoute.put("/:email", async (req, res) => {
     const { error, value } = schema.validate({ name, email, password });
     if (!error) {
       const result = await updateUser(email, req.body);
-      res.json(result);
+      res.json({
+        name: result.name,
+        email: result.email,
+      });
     } else {
       res.status(400).json(error);
     }
@@ -67,7 +76,7 @@ userRoute.put("/:email", async (req, res) => {
   }
 });
 
-userRoute.delete("/:email", async (req, res) => {
+userRoute.delete("/:email", verifyToken, async (req, res) => {
   try {
     const email = req.params.email;
     if (!email) {
@@ -75,7 +84,10 @@ userRoute.delete("/:email", async (req, res) => {
     }
 
     const result = await disableUser(email);
-    res.json(result);
+    res.json({
+      name: result.name,
+      email: result.email,
+    });
   } catch (error) {
     res.status(400).json(error);
   }
