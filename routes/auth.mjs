@@ -22,7 +22,7 @@ authRoute.post("/", async (req, res) => {
       if (validPassword) {
         const token = jwt.sign(
           {
-            data: {
+            user: {
               _id: user.id,
               name: user.name,
               email: user.email,

@@ -27,14 +27,14 @@ courseRoute.get("/", verifyToken, async (req, res) => {
 courseRoute.post("/", verifyToken, async (req, res) => {
   try {
     // Validar los datos de entrada
-    const { title, description } = req.body;
+    const { title, description } = req;
     if (!title || !description) {
       return res.status(400).json({ error: "All fields are required" });
     }
     // Crear el usuario
     const { error, value } = schema.validate({ title, description });
     if (!error) {
-      const result = await createCourse(req.body);
+      const result = await createCourse(req);
       res.json(result);
     } else {
       res.status(400).json(error);

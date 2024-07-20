@@ -2,15 +2,21 @@
 import Course from "../models/courseModel.mjs";
 
 export const getCourses = async () => {
-  const courses = await Course.find({ state: true });
+  // populate() se utiliza para, a partir de la relacion del curso con el id del autor, ir a buscar los valores del autor
+  const courses = await Course.find({ state: true }).populate("author", [
+    "name",
+    "email",
+    "-_id", // para excluir un campo, se usa el simbolo "-" antes de la propiedada a excluir
+  ]);
   return courses;
 };
 
 // Función para crear un curso en la base de datos
-export const createCourse = async (body) => {
+export const createCourse = async (req) => {
   const course = new Course({
-    title: body.title,
-    description: body.description,
+    title: req.body.title,
+    description: req.body.description,
+    author: req.user._id,
   });
 
   // Guardar el curso en la base de datos

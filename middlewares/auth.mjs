@@ -7,7 +7,7 @@ export const verifyToken = (req, res, next) => {
     if (error) {
       return res.status(401).json(error);
     }
-    req.user = decoded.data;
+    req.user = decoded.user;
     // res.send(token);
     next();
   });
